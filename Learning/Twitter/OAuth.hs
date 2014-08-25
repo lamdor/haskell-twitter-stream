@@ -1,21 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Learning.Twitter.OAuth
        (
-         oauth
-       , oauthCredential
+         twitterOAuth
+       , twitterCredential
        , signOAuth -- re-export from Web.Authenticate.OAuth
+       , OAuth
+       , Credential
        ) where
 
 import Web.Authenticate.OAuth
 
-oauth :: OAuth
-oauth = newOAuth { oauthServerName = "twitter"
+twitterOAuth :: OAuth
+twitterOAuth = newOAuth { oauthServerName = "twitter"
                  , oauthConsumerKey = "" 
                  , oauthConsumerSecret = ""
                  }
 
-oauthCredential :: Credential
-oauthCredential = newCredential oauthToken oauthTokenSecret
+twitterCredential :: Credential
+twitterCredential = newCredential oauthToken oauthTokenSecret
   where oauthToken = ""
         oauthTokenSecret = ""
 

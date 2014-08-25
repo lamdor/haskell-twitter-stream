@@ -31,5 +31,6 @@ library
                      , http-conduit
                      , resourcet
                      , transformers
+                     , transformers-base
 
   default-language:    Haskell2010
