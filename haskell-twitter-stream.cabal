@@ -17,10 +17,16 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Learning.Twitter.Stream
+
   other-modules:       Learning.Conduit
+                     , Learning.Twitter.OAuth
+
   build-depends:       base >=4.7 && <4.8
                      , conduit
                      , resourcet
                      , transformers
-                     , transformers-base
+                     , http-conduit
+                     , conduit-extra
+                     , authenticate-oauth
+
   default-language:    Haskell2010
