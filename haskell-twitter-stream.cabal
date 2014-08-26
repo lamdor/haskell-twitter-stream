@@ -31,7 +31,8 @@ library
                      , conduit
                      , conduit-extra
                      , exceptions
-                     , http-conduit
+                     , http-client
+                     , http-client-tls
                      , resourcet
                      , transformers
                      , transformers-base
