@@ -1,26 +1,31 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
 module Learning.Twitter.Stream where
 
 import Control.Monad.Trans.Resource
+import Control.Monad.IO.Class
 import Data.Aeson (Value)
+import Data.ByteString
 import Data.Conduit
 import Learning.Twitter.Conduit
 import Learning.Twitter.OAuth
 import Learning.Twitter.URL
 import Network.HTTP.Conduit
 
-readTwitterStream :: (MonadBaseControl IO m, MonadResource m) =>
+readTwitterStream :: (MonadResource m) => 
                      URL -> OAuth -> Credential ->
-                     Sink Value (ResourceT m) r ->
-                     m r
-readTwitterStream url oauth creds sink = do
-  request <- parseUrl url
-  signedReq <- signOAuth oauth creds request
-  withManager $ \manager -> do
-      response <- http signedReq manager
-      responseBody response $$+- parseToJsonConduit =$ sink
+                     m (Source m Value)
+readTwitterStream url oauth creds = do
+  manager   <- liftIO $ newManager conduitManagerSettings
+  signedReq <- signReq url oauth creds
+  response  <- http signedReq manager
+  let jsonResumableStream = responseBody response $=+ parseToJsonConduit
+  (s,f)     <- unwrapResumable jsonResumableStream
+  return . (addCleanupManager manager) . (addCleanup (const f)) $ s
+ where
+   signReq url oauth creds = do
+     request <- parseUrl url
+     signOAuth oauth creds request
+   addCleanupManager manager = addCleanup (const (liftIO $ closeManager manager))
+         
 
-
-test_readstream :: IO ()
-test_readstream =
-  runResourceT $ readTwitterStream twitterSampleURL twitterOAuth twitterCredential resourcePrintSink

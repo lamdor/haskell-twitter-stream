@@ -6,7 +6,6 @@ version:             0.1.0.0
 -- synopsis:            
 -- description:         
 -- license:             
-license-file:        LICENSE
 author:              Luke Amdor
 maintainer:          luke.amdor@gmail.com
 -- copyright:           
@@ -42,6 +41,22 @@ library
 executable haskell-twitter-stream-exec
   main-is: Main.hs
   hs-source-dirs: main
+
   build-depends: haskell-twitter-stream
                , base >=4.7 && <4.8
                , resourcet
+               , conduit
+
+  default-language:    Haskell2010
+
+test-suite doctests
+  type:          exitcode-stdio-1.0
+  ghc-options:   -threaded
+
+  main-is:       doctests.hs
+  hs-source-dirs: tests
+
+  build-depends: base >=4.7 && <4.8
+               , doctest
+
+  default-language:    Haskell2010
