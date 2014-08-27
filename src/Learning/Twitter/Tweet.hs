@@ -5,12 +5,10 @@ import           Control.Monad
 import           Control.Lens
 import           Data.Aeson
 import           Data.Aeson.Lens
-import           Data.Conduit
-import qualified Data.Conduit.List as CL
 import qualified Data.Text as T
   
-tweetText :: (Monad m) => Conduit Value m T.Text
-tweetText = CL.mapMaybe (getTextAttribute >=> getText)
+tweetText :: Value -> Maybe T.Text
+tweetText = getTextAttribute >=> getText
   where
     getTextAttribute js = js ^? key "text"
     getText (String txt) = Just txt

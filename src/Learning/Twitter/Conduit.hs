@@ -14,8 +14,8 @@ import qualified Data.Text as T
 parseToJsonConduit :: MonadThrow m => Conduit ByteString m Value
 parseToJsonConduit = CB.lines =$= CA.conduitParser json =$= CL.map snd
 
-resourcePrintSink :: (Show a, MonadResource m) => Sink a m ()
-resourcePrintSink = CL.mapM_ (liftIO . print)
+printSink :: (Show a, MonadResource m) => Sink a m ()
+printSink = CL.mapM_ (liftIO . print)
 
 putTextSink :: (MonadResource m) => Sink T.Text m ()
 putTextSink = CL.mapM_ (liftIO . putStrLn . T.unpack)
