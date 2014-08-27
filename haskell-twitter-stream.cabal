@@ -17,10 +17,11 @@ cabal-version:       >=1.10
 library
   hs-source-dirs: src
 
-  exposed-modules:     Learning.Twitter.Stream
+  exposed-modules:     Learning.Twitter.Conduit
                      , Learning.Twitter.OAuth
+                     , Learning.Twitter.Stream
+                     , Learning.Twitter.Tweet
                      , Learning.Twitter.URL
-                     , Learning.Twitter.Conduit
 
   other-modules:       Learning.Conduit
 
@@ -33,7 +34,10 @@ library
                      , exceptions
                      , http-client
                      , http-client-tls
+                     , lens
+                     , lens-aeson
                      , resourcet
+                     , text
                      , transformers
                      , transformers-base
 
