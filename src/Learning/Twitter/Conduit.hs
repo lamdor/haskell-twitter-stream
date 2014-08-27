@@ -1,6 +1,7 @@
 module Learning.Twitter.Conduit
        (
-         parseToJsonConduit
+         foreverSource
+       , parseToJsonConduit
        , resourcePrintSink
        ) where
 
@@ -20,3 +21,6 @@ parseToJsonConduit = CB.lines =$= CA.conduitParser json =$= CL.map snd
 resourcePrintSink :: (Show a, MonadResource m) => Sink a m ()
 resourcePrintSink = CL.mapM_ (liftIO . print)
 
+foreverSource :: (Functor m, Monad m) => m a -> Source m a
+foreverSource m =
+  CL.unfoldM (const $ fmap (\a  -> Just (a,())) m) ()
