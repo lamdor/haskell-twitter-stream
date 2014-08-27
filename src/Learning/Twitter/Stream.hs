@@ -1,31 +1,33 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE FlexibleContexts #-}
 module Learning.Twitter.Stream where
 
-import Control.Monad.Trans.Resource
 import Control.Monad.IO.Class
+import Control.Monad.Trans.Resource
 import Data.Aeson (Value)
-import Data.ByteString
+import Data.ByteString (ByteString)
 import Data.Conduit
 import Learning.Twitter.Conduit
 import Learning.Twitter.OAuth
 import Learning.Twitter.URL
-import Network.HTTP.Conduit
+import Network.HTTP.Client
+import Network.HTTP.Client.TLS
 
 readTwitterStream :: (MonadResource m) => 
                      URL -> OAuth -> Credential ->
-                     m (Source m Value)
-readTwitterStream url oauth creds = do
-  manager   <- liftIO $ newManager conduitManagerSettings
-  signedReq <- signReq url oauth creds
-  response  <- http signedReq manager
-  let jsonResumableStream = responseBody response $=+ parseToJsonConduit
-  (s,f)     <- unwrapResumable jsonResumableStream
-  return . (addCleanupManager manager) . (addCleanup (const f)) $ s
- where
-   signReq url oauth creds = do
-     request <- parseUrl url
-     signOAuth oauth creds request
-   addCleanupManager manager = addCleanup (const (liftIO $ closeManager manager))
-         
+                     Source m ByteString
+readTwitterStream url oauth creds =
+  bracketP openURLResponse responseClose foreverReadResponse
+  where
+    openURLResponse = do 
+      manager   <- newManager tlsManagerSettings
+      request   <- parseUrl url
+      signedReq <- signOAuth oauth creds request
+      responseOpen signedReq manager
+    foreverReadResponse response =
+      let br = responseBody response in 
+       foreverSource $ liftIO $ brRead br
 
+readTwitterStreamJSON :: (MonadResource m) => 
+                         URL -> OAuth -> Credential ->
+                         Source m Value
+readTwitterStreamJSON url oauth creds =
+  readTwitterStream url oauth creds $= parseToJsonConduit
