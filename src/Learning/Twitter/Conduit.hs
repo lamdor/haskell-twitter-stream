@@ -24,12 +24,12 @@ parseToJSONConduit :: MonadThrow m => Conduit ByteString m Value
 parseToJSONConduit = CB.lines =$= CA.conduitParser json =$= CL.map snd
 
 decodeJSONConduit :: (MonadThrow m, FromJSON b) => Conduit ByteString m b
-decodeJSONConduit = parseToJSONConduit =$= CL.mapMaybe fromJSONMaybe
+decodeJSONConduit = parseToJSONConduit =$= CL.mapM fromJSONM
   where
-    fromJSONMaybe v =
+    fromJSONM v =
       case (fromJSON v) of
-       Success b -> Just b
-       _         -> Nothing
+       Success b -> return b
+       Error msg -> fail msg
 
 countConduit :: (Monad m) => Conduit a m Int
 countConduit = scanMappendConduit (const (Sum 1)) =$= CL.map getSum
