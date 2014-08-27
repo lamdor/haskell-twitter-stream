@@ -30,4 +30,4 @@ readTwitterStreamJSON :: (MonadResource m) =>
                          URL -> OAuth -> Credential ->
                          Source m Value
 readTwitterStreamJSON url oauth creds =
-  readTwitterStream url oauth creds $= parseToJsonConduit
+  readTwitterStream url oauth creds $= parseToJSONConduit

@@ -19,6 +19,7 @@ library
 
   exposed-modules:     Learning.Twitter.Conduit
                      , Learning.Twitter.OAuth
+                     , Learning.Twitter.Stats
                      , Learning.Twitter.Stream
                      , Learning.Twitter.Tweet
                      , Learning.Twitter.URL

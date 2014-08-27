@@ -1,18 +1,22 @@
+{-# LANGUAGE RankNTypes #-}
 module Main where
 
 import Control.Monad.Trans.Resource
 import Data.Conduit
-import qualified Data.Conduit.List as CL
 import Learning.Twitter.Conduit
 import Learning.Twitter.OAuth
-import Learning.Twitter.Stream
 import Learning.Twitter.Stats
+import Learning.Twitter.Stream
 import Learning.Twitter.Tweet
 import Learning.Twitter.URL
 
+type TweetStatsSource = (MonadResource m) => Source m TweetStats
+
 main :: IO ()
 main = runResourceT $ 
-  readTwitterStreamJSON twitterSampleURL twitterOAuth twitterCredential =$= countConduit $$ printSink
+  (readTwitterStream twitterSampleURL twitterOAuth twitterCredential =$= decodeJSONConduit :: TweetStatsSource) =$=
+  scanMappendConduit id $$
+  printSink
      
 
 
