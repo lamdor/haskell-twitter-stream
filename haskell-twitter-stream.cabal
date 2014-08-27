@@ -37,8 +37,10 @@ library
                      , http-client-tls
                      , lens
                      , lens-aeson
+                     , old-locale
                      , resourcet
                      , text
+                     , time
                      , transformers
                      , transformers-base
 

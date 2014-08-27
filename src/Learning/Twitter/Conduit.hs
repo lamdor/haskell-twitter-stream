@@ -21,10 +21,10 @@ foreverSource m =
 -- Conduits
 
 parseToJSONConduit :: MonadThrow m => Conduit ByteString m Value
-parseToJSONConduit = CB.lines =$= CA.conduitParser json =$= CL.map snd
+parseToJSONConduit = CA.conduitParser json =$= CL.map snd
 
-decodeJSONConduit :: (MonadThrow m, FromJSON b) => Conduit ByteString m b
-decodeJSONConduit = parseToJSONConduit =$= CL.mapM fromJSONM
+fromJSONConduit :: (Monad m, FromJSON b) => Conduit Value m b
+fromJSONConduit = CL.mapM fromJSONM
   where
     fromJSONM v =
       case (fromJSON v) of
