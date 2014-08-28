@@ -20,7 +20,16 @@ import           Learning.Twitter.Stream
 import           Learning.Twitter.URL
 import           System.Locale
   
+-- $setup
+-- >>> :set -XOverloadedStrings
+
 newtype Tweet = Tweet { tweetJson :: Value } deriving (Show, Eq)
+
+
+-- | Example
+--
+-- >>> decode "{\"abc\": 123, \"text\": \"hello\"}" >>= tweetText
+-- Just "hello"
   
 tweetText :: Value -> Maybe T.Text
 tweetText = getTextAttribute >=> getText
@@ -29,8 +38,21 @@ tweetText = getTextAttribute >=> getText
     getText (String txt) = Just txt
     getText _            = Nothing
 
+
+-- | Example
+--
+-- >>> isTweet <$> decode "{\"abc\": 123, \"text\": \"hello\"}"
+-- Just True
+
 isTweet :: Value -> Bool
 isTweet = isNothing . (^? key "delete")
+
+
+-- | Example
+--
+-- >>> let tweets = runResourceT $ tweetSource twitterSampleURL twitterOAuth twitterCredential $$ CL.take 2
+-- >>> length <$> tweets
+-- 2
 
 tweetSource :: (MonadResource m) => URL -> OAuth -> Credential -> Source m Tweet
 tweetSource url oauth creds =
@@ -41,6 +63,12 @@ tweetSource url oauth creds =
   
 
 newtype TwitterDateTime = TwitterDateTime { utc :: UTCTime } deriving (Show, Eq, Ord)
+
+
+-- | Example
+--
+-- >>> fromJSON $ String "Wed Aug 27 13:08:45 +0000 2008" :: Result TwitterDateTime
+-- Success (TwitterDateTime {utc = 2008-08-27 13:08:45 UTC})
 
 instance FromJSON TwitterDateTime where
   parseJSON = withText "TwitterDateTime" $ \t ->
