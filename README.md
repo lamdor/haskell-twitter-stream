@@ -2,7 +2,7 @@
 
 ### Building / Testing ###
 
-1. `cabal sandbox`
+1. `cabal sandbox init`
 2. `cabal install --only-dependencies`
 3. `cabal build`
 4. `dist/build/haskell-twitter-stream-exec/haskell-twitter-stream-exec` to run
