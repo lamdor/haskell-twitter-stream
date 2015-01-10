@@ -3,11 +3,9 @@ module Learning.Twitter.Conduit where
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Resource
 import           Data.Aeson
-import           Data.Aeson.Parser
 import           Data.ByteString (ByteString)
 import           Data.Conduit
 import qualified Data.Conduit.Attoparsec as CA
-import qualified Data.Conduit.Binary as CB
 import qualified Data.Conduit.List as CL
 import           Data.Monoid
 import qualified Data.Text as T
