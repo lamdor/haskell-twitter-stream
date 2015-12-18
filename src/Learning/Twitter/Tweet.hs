@@ -41,6 +41,8 @@ tweetText = getTextAttribute >=> getText
 --
 -- >>> isTweet <$> decode "{\"abc\": 123, \"text\": \"hello\"}"
 -- Just True
+-- >>> isTweet <$> decode "{\"abc\": 123, \"delete\": \"true\"}"
+-- Just False
 
 isTweet :: Value -> Bool
 isTweet = isNothing . (^? key "delete")
