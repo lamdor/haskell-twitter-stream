@@ -1,5 +1,6 @@
 module Learning.Twitter.Conduit where
 
+import           Control.Monad
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Resource
 import           Data.Aeson
@@ -43,7 +44,7 @@ fromJSONConduit :: (Monad m, FromJSON b) => Conduit Value m b
 fromJSONConduit = CL.mapM fromJSONM
   where
     fromJSONM v =
-      case (fromJSON v) of
+      case fromJSON v of
        Success b -> return b
        Error msg -> fail msg
 
@@ -63,9 +64,9 @@ countConduit = scanMappendConduit (const (Sum 1)) =$= CL.map getSum
 -- [1,3,6]
 
 scanMappendConduit :: (Monad m, Monoid b) => (a -> b) -> Conduit a m b
-scanMappendConduit f = CL.scanl go mempty
+scanMappendConduit f = void $ CL.mapAccum go mempty
   where go a b = let b' = b `mappend` f a in (b', b')
-  
+
 -- Sinks
 
 -- | Example
@@ -73,7 +74,7 @@ scanMappendConduit f = CL.scanl go mempty
 -- >>> CL.sourceList [1,2] $$ printSink :: IO ()
 -- 1
 -- 2
-    
+
 printSink :: (Show a, MonadIO m) => Sink a m ()
 printSink = CL.mapM_ (liftIO . print)
 
@@ -84,4 +85,3 @@ printSink = CL.mapM_ (liftIO . print)
 
 putTextSink :: (MonadIO m) => Sink T.Text m ()
 putTextSink = CL.mapM_ (liftIO . putStrLn . T.unpack)
-
