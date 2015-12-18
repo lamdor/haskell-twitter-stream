@@ -18,8 +18,7 @@ import           Learning.Twitter.Conduit
 import           Learning.Twitter.OAuth
 import           Learning.Twitter.Stream
 import           Learning.Twitter.URL
-import           System.Locale
-  
+
 -- $setup
 -- >>> :set -XOverloadedStrings
 
@@ -30,7 +29,7 @@ newtype Tweet = Tweet { tweetJson :: Value } deriving (Show, Eq)
 --
 -- >>> decode "{\"abc\": 123, \"text\": \"hello\"}" >>= tweetText
 -- Just "hello"
-  
+
 tweetText :: Value -> Maybe T.Text
 tweetText = getTextAttribute >=> getText
   where
@@ -60,7 +59,7 @@ tweetSource url oauth creds =
   CL.filter isTweet =$=
   fromJSONConduit =$=
   CL.map Tweet
-  
+
 
 newtype TwitterDateTime = TwitterDateTime { utc :: UTCTime } deriving (Show, Eq, Ord)
 
@@ -72,10 +71,9 @@ newtype TwitterDateTime = TwitterDateTime { utc :: UTCTime } deriving (Show, Eq,
 
 instance FromJSON TwitterDateTime where
   parseJSON = withText "TwitterDateTime" $ \t ->
-    case parseTime defaultTimeLocale "%a %b %d %H:%M:%S +0000 %Y" (T.unpack t) of
+    case parseTimeM True defaultTimeLocale "%a %b %d %H:%M:%S +0000 %Y" (T.unpack t) of
       Just dt -> pure $ TwitterDateTime dt
       Nothing -> fail "couldn't parse TwitterDateTime"
 
 epochTwitterDateTime :: TwitterDateTime
-epochTwitterDateTime = TwitterDateTime $ UTCTime (ModifiedJulianDay 0) 0 
-
+epochTwitterDateTime = TwitterDateTime $ UTCTime (ModifiedJulianDay 0) 0
