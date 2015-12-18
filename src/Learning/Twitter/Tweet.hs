@@ -50,7 +50,7 @@ isTweet = isNothing . (^? key "delete")
 
 -- | Example
 --
--- >>> let tweets = runResourceT $ tweetSource twitterSampleURL twitterOAuth twitterCredential $$ CL.take 2
+-- >>> let tweets = runResourceT $ tweetSource twitterSampleURL twitterOAuth twitterCredential $$ CL.take 2 :: IO [Tweet]
 -- >>> length <$> tweets
 -- 2
 
