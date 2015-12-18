@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Learning.Twitter.Tweet where
 
-import           Control.Applicative
 import           Control.Lens
 import           Control.Monad
 import           Control.Monad.Trans.Resource
