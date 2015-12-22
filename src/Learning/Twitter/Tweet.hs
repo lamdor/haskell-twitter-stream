@@ -20,6 +20,8 @@ import           Learning.Twitter.URL
 
 -- $setup
 -- >>> :set -XOverloadedStrings
+-- >>> Just twitterOAuth <- twitterOAuthFromEnv
+-- >>> Just twitterCredential <- twitterCredentialFromEnv
 
 newtype Tweet = Tweet { tweetJson :: Value } deriving (Show, Eq)
 

@@ -1,24 +1,32 @@
-{-# LANGUAGE OverloadedStrings #-}
-module Learning.Twitter.OAuth
-       (
-         twitterOAuth
-       , twitterCredential
-       , signOAuth -- re-export from Web.Authenticate.OAuth
-       , OAuth
-       , Credential
-       ) where
+module Learning.Twitter.OAuth (
+    twitterOAuthFromEnv,
+    twitterCredentialFromEnv,
+    signOAuth,
+    OAuth,
+    Credential,
+    ) where
 
-import Web.Authenticate.OAuth
+import           Web.Authenticate.OAuth
+import           System.Environment (lookupEnv)
+import           Data.ByteString.Char8 (ByteString, pack)
 
-twitterOAuth :: OAuth
-twitterOAuth = newOAuth { oauthServerName = "twitter"
-                 , oauthConsumerKey = "7VHAjymFKvJLehEwkinSB2T6p" 
-                 , oauthConsumerSecret = "beBdOx64C527xIxx1HkG9IF8e0Jl0JBz21VJ3JX5eAwxFPZYQe"
-                 }
+twitterOAuthFromEnv :: IO (Maybe OAuth)
+twitterOAuthFromEnv = do
+  mkey <- lookupEnvBS "TWITTER_OAUTH_CONSUMER_KEY"
+  msecret <- lookupEnvBS "TWITTER_OAUTH_CONSUMER_SECRET"
+  return $ toOAuth <$> mkey <*> msecret
 
-twitterCredential :: Credential
-twitterCredential = newCredential oauthToken oauthTokenSecret
-  where oauthToken = "14086115-2oy2mmEHjfZuSI182u7bFU7SAKKWEVITdpe9sSUXO"
-        oauthTokenSecret = "lugmfaC63GrnWZYQFSAxVCsgBdXzJBx6Xk56oEcTrQdvq"
+  where
+    toOAuth key secret =
+      newOAuth { oauthServerName = "twitter", oauthConsumerKey = key, oauthConsumerSecret = secret }
 
+twitterCredentialFromEnv :: IO (Maybe Credential)
+twitterCredentialFromEnv = do
+  mkey <- lookupEnvBS "TWITTER_OAUTH_TOKEN"
+  msecret <- lookupEnvBS "TWITTER_OAUTH_TOKEN_SECRET"
+  return $ newCredential <$> mkey <*> msecret
 
+lookupEnvBS :: String -> IO (Maybe ByteString)
+lookupEnvBS name = do
+  val <- lookupEnv name
+  return $ fmap pack val

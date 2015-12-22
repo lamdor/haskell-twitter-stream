@@ -1,23 +1,26 @@
-{-# LANGUAGE RankNTypes #-}
 module Main where
 
-import Control.Monad.Trans.Resource
-import Data.Conduit
+import           Control.Monad.Trans.Resource
+import           Data.Conduit
 import qualified Data.Conduit.List as CL
-import Learning.Twitter.Conduit
-import Learning.Twitter.OAuth
-import Learning.Twitter.Stats
-import Learning.Twitter.Tweet
-import Learning.Twitter.URL
+import           Learning.Twitter.Conduit
+import           Learning.Twitter.OAuth
+import           Learning.Twitter.Stats
+import           Learning.Twitter.Tweet
+import           Learning.Twitter.URL
 
 main :: IO ()
-main = runResourceT $
+main = do
+  (Just twitterOAuth) <- twitterOAuthFromEnv
+  (Just twitterCredential) <- twitterCredentialFromEnv
 
-  readSamplingTweets =$= mapToStats =$= addStatsTogether $$ printSink
+  runResourceT $
+    readSamplingTweets twitterOAuth twitterCredential =$= mapToStats =$= addStatsTogether $$ printSink
 
-  where readSamplingTweets = tweetSource twitterSampleURL twitterOAuth twitterCredential
+  where
+    readSamplingTweets = tweetSource twitterSampleURL
 
-        mapToStats :: (MonadResource m) => Conduit Tweet m TweetStats
-        mapToStats = CL.map tweetJson =$= fromJSONConduit
+    mapToStats :: (MonadResource m) => Conduit Tweet m TweetStats
+    mapToStats = CL.map tweetJson =$= fromJSONConduit
 
-        addStatsTogether = scanMappendConduit id
+    addStatsTogether = scanMappendConduit id
