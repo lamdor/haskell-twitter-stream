@@ -30,7 +30,7 @@ foreverSource m =
 -- | Example
 --
 -- >>> CL.sourceList ["[1,2,3]"] =$= parseToJSONConduit $$ CL.consume :: IO [Value]
--- [Array (fromList [Number 1.0,Number 2.0,Number 3.0])]
+-- [Array [Number 1.0,Number 2.0,Number 3.0]]
 
 parseToJSONConduit :: MonadThrow m => Conduit ByteString m Value
 parseToJSONConduit = CA.conduitParser json =$= CL.map snd
