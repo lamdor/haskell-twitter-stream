@@ -25,6 +25,7 @@ library
                      , Learning.Twitter.URL
 
   other-modules:       Learning.Conduit
+                     , Learning.Concurrency
 
   build-depends:       aeson
                      , authenticate-oauth
@@ -32,6 +33,7 @@ library
                      , bytestring
                      , conduit
                      , conduit-extra
+                     , containers
                      , exceptions
                      , http-client
                      , http-client-tls
